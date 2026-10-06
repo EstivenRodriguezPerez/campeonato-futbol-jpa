@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}"></title>
+    <!-- Bootstrap 5 -->
+	<link rel="stylesheet" th:href="@{/css/futbol_theme.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tema Futbolero -->
+    <link rel="stylesheet" th:href="@{/css/futbol_theme.css}">
+</head>
+<body>
+
+<!-- Barra de navegación común -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 mb-4">
+    <a class="navbar-brand fw-bold" href="/clubes">🏆 Torneo de Fútbol NoSQL</a>
+    <div class="navbar-nav">
+        <a class="nav-link active" href="/clubes">Clubes</a>
+        <a class="nav-link" href="/entrenadores">Entrenadores</a>
+        <a class="nav-link" href="/jugadores">Jugadores</a>
+        <a class="nav-link" href="/asociaciones">Asociaciones</a>
+        <a class="nav-link" href="/competiciones">Competiciones</a>
+    </div>
+</nav>
+
+<div class="container py-3 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size: 1.5rem;">🛡️</span>
+                        <div>
+                            <h5 class="mb-0" th:text="${titulo}">Registrar Club</h5>
+                            <small class="opacity-75">Configuración de relaciones NoSQL con @DocumentReference</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <form th:action="@{/clubes/guardar}" th:object="${club}" method="post">
+                        <input type="hidden" th:field="*{id}" />
+
+                        <!-- Nombre del Club -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Nombre del Club</label>
+                            <input type="text" class="form-control form-control-lg" th:field="*{nombre}" required placeholder="Ej. Millonarios FC, Santa Fe, etc." />
+                        </div>
+
+                        <!-- Fila de Relaciones 1:1 y N:1 -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">👔 Director Técnico (@OneToOne)</label>
+                                <select class="form-select" th:field="*{entrenador}">
+                                    <option value="">-- Sin Entrenador Asignado --</option>
+                                    <option th:each="ent : ${entrenadores}" th:value="${ent.id}" th:text="${ent.nombre + ' ' + ent.apellido + ' (' + ent.nacionalidad + ')'}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">🏛️ Asociación / Federación (@ManyToOne)</label>
+                                <select class="form-select" th:field="*{asociacion}">
+                                    <option value="">-- Sin Asociación Asignada --</option>
+                                    <option th:each="asoc : ${asociaciones}" th:value="${asoc.id}" th:text="${asoc.nombre + ' (' + asoc.pais + ')'}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted" />
+
+                        <!-- 1 a Muchos: Jugadores con Contorno Resaltado -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold mb-0">
+                                    ⚽ Plantel de Jugadores (@DocumentReference 1:N)
+                                </label>
+                                <span class="badge bg-success text-white">
+                                    Selección Múltiple
+                                </span>
+                            </div>
+                            <small class="text-muted d-block mb-2">Selecciona los jugadores que integran la plantilla:</small>
+                            
+                            <div class="checklist-soccer-box">
+                                <div class="checklist-soccer-item" th:each="jug : ${todosLosJugadores}">
+                                    <input class="form-check-input" type="checkbox" th:field="*{jugadores}" th:value="${jug.id}" th:id="${'chk-jug-' + jug.id}" />
+                                    <label th:for="${'chk-jug-' + jug.id}">
+                                        <span class="fw-semibold text-dark" th:text="${jug.nombre + ' ' + jug.apellido}"></span>
+                                        <span>
+                                            <span class="badge bg-light text-dark border me-1" th:text="${jug.posicion}"></span>
+                                            <span class="badge-dorsal" th:text="'#' + ${jug.numero}"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div th:if="${#lists.isEmpty(todosLosJugadores)}" class="text-center text-muted py-3">
+                                    No hay jugadores registrados. <a href="/jugadores/nuevo">Crear uno aquí</a>.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Muchos a Muchos: Competiciones con Contorno Resaltado -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold mb-0">
+                                    🏆 Torneos y Competiciones (@DocumentReference N:N)
+                                </label>
+                                <span class="badge bg-warning text-dark">
+                                    Selección Múltiple
+                                </span>
+                            </div>
+                            <small class="text-muted d-block mb-2">Marca los torneos en los que participará este club:</small>
+                            
+                            <div class="checklist-soccer-box">
+                                <div class="checklist-soccer-item" th:each="comp : ${todasLasCompeticiones}">
+                                    <input class="form-check-input" type="checkbox" th:field="*{competiciones}" th:value="${comp.id}" th:id="${'chk-comp-' + comp.id}" />
+                                    <label th:for="${'chk-comp-' + comp.id}">
+                                        <span class="fw-semibold text-dark" th:text="${comp.nombre}"></span>
+                                        <span class="badge-trophy" 
+                                              th:text="'$' + ${#numbers.formatDecimal(comp.montoPremio, 0, 'COMMA', 0, 'POINT')} + ' USD'">
+                                        </span>
+                                    </label>
+                                </div>
+                                <div th:if="${#lists.isEmpty(todasLasCompeticiones)}" class="text-center text-muted py-3">
+                                    No hay competiciones registradas. <a href="/competiciones/nuevo">Crear una aquí</a>.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a th:href="@{/clubes/listar}" class="btn btn-outline-secondary px-4">
+                                ← Volver a Registros
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4 shadow-sm">
+                                💾 Guardar Club
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Efecto interactivo: ilumina la tarjeta cuando el checkbox se marca
+    document.querySelectorAll('.checklist-soccer-item input[type="checkbox"]').forEach(chk => {
+        function updateStyle() {
+            if (chk.checked) {
+                chk.closest('.checklist-soccer-item').classList.add('item-selected');
+            } else {
+                chk.closest('.checklist-soccer-item').classList.remove('item-selected');
+            }
+        }
+        chk.addEventListener('change', updateStyle);
+        updateStyle();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<link rel="stylesheet" th:href="@{/css/futbol_theme.css}">
+    <meta charset="UTF-8">
+    <title>Registros de Jugadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 mb-4">
+    <a class="navbar-brand fw-bold" href="/clubes">🏆 Campeonato Fútbol</a>
+    <div class="navbar-nav">
+        <a class="nav-link" href="/clubes">Clubes</a>
+        <a class="nav-link" href="/entrenadores">Entrenadores</a>
+        <a class="nav-link active" href="/jugadores">Jugadores</a>
+        <a class="nav-link" href="/asociaciones">Asociaciones</a>
+        <a class="nav-link" href="/competiciones">Competiciones</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>📋 Registros de Jugadores</h3>
+        <a th:href="@{/jugadores/nuevo}" class="btn btn-primary">+ Nuevo Jugador</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Dorsal</th>
+                    <th>Nombre Completo</th>
+                    <th>Posición</th>
+                    <th>ID</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="jug : ${jugadores}">
+                    <td><span class="badge bg-primary fs-6" th:text="'#' + ${jug.numero}"></span></td>
+                    <td class="fw-bold" th:text="${jug.nombre + ' ' + jug.apellido}"></td>
+                    <td><span class="badge bg-light text-dark border" th:text="${jug.posicion}"></span></td>
+                    <td class="text-muted font-monospace" th:text="${jug.id}"></td>
+                    <td class="text-end">
+                        <a th:href="@{/jugadores/editar/{id}(id=${jug.id})}" class="btn btn-sm btn-outline-warning">Editar</a>
+                        <a th:href="@{/jugadores/eliminar/{id}(id=${jug.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este jugador?')">Eliminar</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(jugadores)}">
+                    <td colspan="5" class="text-center text-muted py-4">No hay jugadores registrados aún.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
