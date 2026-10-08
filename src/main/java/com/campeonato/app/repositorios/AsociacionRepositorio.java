@@ -1,9 +1,9 @@
 package com.campeonato.app.repositorios;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.campeonato.app.entidades.Asociacion;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AsociacionRepositorio extends MongoRepository<Asociacion, Long> {
+public interface AsociacionRepositorio extends JpaRepository<Asociacion, Long> {
 }

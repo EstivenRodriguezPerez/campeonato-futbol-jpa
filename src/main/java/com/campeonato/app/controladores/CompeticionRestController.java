@@ -2,7 +2,6 @@ package com.campeonato.app.controladores;
 
 import com.campeonato.app.entidades.Competicion;
 import com.campeonato.app.repositorios.CompeticionRepositorio;
-import com.campeonato.app.servicios.SequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +17,6 @@ public class CompeticionRestController {
     @Autowired
     private CompeticionRepositorio competicionRepo;
 
-    @Autowired
-    private SequenceGeneratorService sequenceService;
-
     @GetMapping
     public List<Competicion> listar() {
         return competicionRepo.findAll();
@@ -35,9 +31,6 @@ public class CompeticionRestController {
 
     @PostMapping
     public ResponseEntity<Competicion> crear(@RequestBody Competicion competicion) {
-        if (competicion.getId() == null) {
-            competicion.setId(sequenceService.generateSequence(Competicion.SEQUENCE_NAME));
-        }
         return new ResponseEntity<>(competicionRepo.save(competicion), HttpStatus.CREATED);
     }
 

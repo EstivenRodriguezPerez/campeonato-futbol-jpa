@@ -1,9 +1,10 @@
 package com.campeonato.app.repositorios;
 
+
 import com.campeonato.app.entidades.Entrenador;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EntrenadorRepositorio extends MongoRepository<Entrenador, Long> {
+public interface EntrenadorRepositorio extends JpaRepository<Entrenador, Long> {
 }

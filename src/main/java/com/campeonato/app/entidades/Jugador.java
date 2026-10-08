@@ -1,41 +1,86 @@
 package com.campeonato.app.entidades;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
-@Document(collection = "jugadores")
+@Entity
+@Table(name = "jugadores")
 public class Jugador {
-    public static final String SEQUENCE_NAME = "jugadores_sequence";
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nombre;
-    private String apellido;
-    private int numero;
+    private String apellidos;
+    private Integer numero;
     private String posicion;
+
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private Club club;
 
     public Jugador() {}
 
-    public Jugador(Long id, String nombre, String apellido, int numero, String posicion) {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
         this.nombre = nombre;
-        this.apellido = apellido;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
         this.numero = numero;
+    }
+
+    // Alias por compatibilidad con plantillas que usen 'dorsal'
+    public Integer getDorsal() {
+        return numero;
+    }
+
+    public void setDorsal(Integer dorsal) {
+        this.numero = dorsal;
+    }
+
+    public String getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(String posicion) {
         this.posicion = posicion;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Club getClub() {
+        return club;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
-
-    public int getNumero() { return numero; }
-    public void setNumero(int numero) { this.numero = numero; }
-
-    public String getPosicion() { return posicion; }
-    public void setPosicion(String posicion) { this.posicion = posicion; }
+    public void setClub(Club club) {
+        this.club = club;
+    }
 }

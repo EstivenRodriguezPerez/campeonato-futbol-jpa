@@ -1,58 +1,61 @@
 package com.campeonato.app.entidades;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
-
-import java.util.ArrayList;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.CascadeType;
 import java.util.List;
 
-@Document(collection = "clubes")
+@Entity
+@Table(name = "clubes")
 public class Club {
-    public static final String SEQUENCE_NAME = "clubes_sequence";
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String nombre;
 
-    // Uno a Uno
-    @DocumentReference
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "entrenador_id", referencedColumnName = "id")
     private Entrenador entrenador;
 
-    // Uno a Muchos
-    @DocumentReference
-    private List<Jugador> jugadores = new ArrayList<>();
-
-    // Muchos a Uno
-    @DocumentReference
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "asociacion_id")
     private Asociacion asociacion;
 
-    // Muchos a Muchos
-    @DocumentReference
-    private List<Competicion> competiciones = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "club_id")
+    private List<Jugador> jugadores;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "club_competicion",
+        joinColumns = @JoinColumn(name = "club_id"),
+        inverseJoinColumns = @JoinColumn(name = "competicion_id")
+    )
+    private List<Competicion> competiciones;
 
     public Club() {}
 
-    public Club(Long id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
-    }
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-
     public Entrenador getEntrenador() { return entrenador; }
     public void setEntrenador(Entrenador entrenador) { this.entrenador = entrenador; }
-
-    public List<Jugador> getJugadores() { return jugadores; }
-    public void setJugadores(List<Jugador> jugadores) { this.jugadores = jugadores; }
-
     public Asociacion getAsociacion() { return asociacion; }
     public void setAsociacion(Asociacion asociacion) { this.asociacion = asociacion; }
-
+    public List<Jugador> getJugadores() { return jugadores; }
+    public void setJugadores(List<Jugador> jugadores) { this.jugadores = jugadores; }
     public List<Competicion> getCompeticiones() { return competiciones; }
     public void setCompeticiones(List<Competicion> competiciones) { this.competiciones = competiciones; }
 }

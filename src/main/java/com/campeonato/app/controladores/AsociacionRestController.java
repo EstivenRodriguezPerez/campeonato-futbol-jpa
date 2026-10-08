@@ -2,7 +2,6 @@ package com.campeonato.app.controladores;
 
 import com.campeonato.app.entidades.Asociacion;
 import com.campeonato.app.repositorios.AsociacionRepositorio;
-import com.campeonato.app.servicios.SequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +17,6 @@ public class AsociacionRestController {
     @Autowired
     private AsociacionRepositorio asociacionRepo;
 
-    @Autowired
-    private SequenceGeneratorService sequenceService;
-
     @GetMapping
     public List<Asociacion> listar() {
         return asociacionRepo.findAll();
@@ -35,9 +31,6 @@ public class AsociacionRestController {
 
     @PostMapping
     public ResponseEntity<Asociacion> crear(@RequestBody Asociacion asociacion) {
-        if (asociacion.getId() == null) {
-            asociacion.setId(sequenceService.generateSequence(Asociacion.SEQUENCE_NAME));
-        }
         return new ResponseEntity<>(asociacionRepo.save(asociacion), HttpStatus.CREATED);
     }
 

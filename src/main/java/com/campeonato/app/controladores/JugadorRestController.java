@@ -2,7 +2,6 @@ package com.campeonato.app.controladores;
 
 import com.campeonato.app.entidades.Jugador;
 import com.campeonato.app.repositorios.JugadorRepositorio;
-import com.campeonato.app.servicios.SequenceGeneratorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +17,6 @@ public class JugadorRestController {
     @Autowired
     private JugadorRepositorio jugadorRepo;
 
-    @Autowired
-    private SequenceGeneratorService sequenceService;
-
     @GetMapping
     public List<Jugador> listar() {
         return jugadorRepo.findAll();
@@ -35,9 +31,6 @@ public class JugadorRestController {
 
     @PostMapping
     public ResponseEntity<Jugador> crear(@RequestBody Jugador jugador) {
-        if (jugador.getId() == null) {
-            jugador.setId(sequenceService.generateSequence(Jugador.SEQUENCE_NAME));
-        }
         return new ResponseEntity<>(jugadorRepo.save(jugador), HttpStatus.CREATED);
     }
 

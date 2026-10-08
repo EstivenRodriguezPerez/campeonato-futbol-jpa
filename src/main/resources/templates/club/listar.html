@@ -1,74 +1,58 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<link rel="stylesheet" th:href="@{/css/futbol_theme.css}">
     <meta charset="UTF-8">
-    <title>Registros de Clubes</title>
+    <title>Listado de Clubes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/futbol_theme.css}">
 </head>
 <body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 mb-4">
-    <a class="navbar-brand fw-bold" href="/clubes">🏆 Campeonato Fútbol</a>
-    <div class="navbar-nav">
-        <a class="nav-link active" href="/clubes">Clubes</a>
-        <a class="nav-link" href="/entrenadores">Entrenadores</a>
-        <a class="nav-link" href="/jugadores">Jugadores</a>
-        <a class="nav-link" href="/asociaciones">Asociaciones</a>
-        <a class="nav-link" href="/competiciones">Competiciones</a>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Clubes de Fútbol</h2>
         <div>
-            <h3 class="mb-0">📋 Registros de Clubes</h3>
-            <small class="text-muted">Mapeo NoSQL con @DocumentReference (1:1, N:1, 1:N, N:N)</small>
+            <a th:href="@{/}" class="btn btn-outline-secondary me-2">Inicio</a>
+            <a th:href="@{/clubes/nuevo}" class="btn btn-success">+ Nuevo Club</a>
         </div>
-        <a th:href="@{/clubes/nuevo}" class="btn btn-primary">+ Nuevo Club</a>
     </div>
 
     <div class="card shadow-sm border-0">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Club</th>
-                    <th>Entrenador (1:1)</th>
-                    <th>Asociación (N:1)</th>
-                    <th>Plantel (1:N)</th>
-                    <th>Torneos (N:N)</th>
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="c : ${clubes}">
-                    <td class="text-muted font-monospace" th:text="${c.id}"></td>
-                    <td class="fw-bold" th:text="${c.nombre}"></td>
-                    <td>
-                        <span th:if="${c.entrenador != null}" th:text="${c.entrenador.nombre + ' ' + c.entrenador.apellido}"></span>
-                        <span th:unless="${c.entrenador != null}" class="text-muted fst-italic">Sin asignar</span>
-                    </td>
-                    <td>
-                        <span th:if="${c.asociacion != null}" class="badge bg-secondary" th:text="${c.asociacion.nombre}"></span>
-                        <span th:unless="${c.asociacion != null}" class="text-muted fst-italic">Sin asignar</span>
-                    </td>
-                    <td>
-                        <span class="badge bg-primary" th:text="${c.jugadores != null ? c.jugadores.size() + ' jugadores' : '0'}"></span>
-                    </td>
-                    <td>
-                        <span class="badge bg-warning text-dark" th:text="${c.competiciones != null ? c.competiciones.size() + ' torneos' : '0'}"></span>
-                    </td>
-                    <td class="text-end">
-                        <a th:href="@{/clubes/editar/{id}(id=${c.id})}" class="btn btn-sm btn-outline-warning">Editar</a>
-                        <a th:href="@{/clubes/eliminar/{id}(id=${c.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este club?')">Eliminar</a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(clubes)}">
-                    <td colspan="7" class="text-center text-muted py-4">No hay clubes registrados aún.</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Entrenador</th>
+                            <th>Asociación</th>
+                            <th>Competiciones</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${clubes}">
+                            <td th:text="${c.id}">1</td>
+                            <td class="fw-semibold" th:text="${c.nombre}">Atlético Bucaramanga</td>
+                            <td th:text="${c.entrenador != null ? (c.entrenador.nombre + ' ' + c.entrenador.apellidos) : 'Sin asignar'}">Rafael Dudamel</td>
+                            <td th:text="${c.asociacion != null ? c.asociacion.nombre : 'Sin asignar'}">Dimayor</td>
+                            <td>
+                                <span class="badge bg-info text-dark me-1" th:each="comp : ${c.competiciones}" th:text="${comp.nombre}">Liga BetPlay</span>
+                                <span class="text-muted" th:if="${#lists.isEmpty(c.competiciones)}">Ninguna</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/clubes/editar/{id}(id=${c.id})}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                                <a th:href="@{/clubes/eliminar/{id}(id=${c.id})}" class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('¿Seguro que deseas eliminar este club?');">Eliminar</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(clubes)}">
+                            <td colspan="6" class="text-center text-muted py-4">No hay clubes registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 </body>
